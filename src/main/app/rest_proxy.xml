@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:spring="http://www.springframework.org/schema/beans" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd">
     <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8083" basePath="/testdata" doc:name="HTTP Listener Configuration"/>
     <http:request-config name="HTTP_Request_Configuration" host="ec2-52-50-128-36.eu-west-1.compute.amazonaws.com" port="8080" basePath="/data" doc:name="HTTP Request Configuration">
         <http:basic-authentication username="user" password="HEEalphaTIS"/>
@@ -19,5 +21,8 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
         <set-variable variableName="id" value="#[message.inboundProperties.'http.relative.path']" doc:name="Variable"/>
         <logger message="Request for ID = #[flowVars.id]" level="INFO" doc:name="Logger"/>
         <http:request config-ref="HTTP_Request_Configuration" path="#[flowVars.id]" method="GET" doc:name="Outbound HTTP"/>
+        <json:json-to-object-transformer returnClass="java.lang.Object" encoding="ISO-8859-6" doc:name="JSON to Object"/>
+        <expression-transformer expression="#[['col2':message.payload.j*10]]" doc:name="Expression"/>
+        <mulexml:object-to-xml-transformer doc:name="Object to XML"/>
     </flow>
 </mule>
